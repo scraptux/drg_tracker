@@ -1,0 +1,14 @@
+services:
+  frontend:
+    build: frontend
+    environment:
+      BASE_URL: localhost
+      API_PORT: 8000
+    ports:
+    - "80:80"
+  backend:
+    build: backend
+    volumes:
+    - ./data/db.sqlite3:/django/db.sqlite3
+    ports:
+    - "8000:8000"
