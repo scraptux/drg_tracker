@@ -1,13 +1,13 @@
 services:
   frontend:
     build: frontend
-    environment:
-      BASE_URL: localhost
-      API_PORT: 8000
     ports:
     - "80:80"
   backend:
     build: backend
+    environment:
+      SECRET_KEY: INSERT_RANDOM_LONG_STRING
+      HOSTNAME: INSERT_HOSTNAME
     volumes:
     - ./data/db.sqlite3:/django/db.sqlite3
     ports:
