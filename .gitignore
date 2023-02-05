@@ -1,0 +1,7 @@
+data
+
+backend/*.sqlite3
+backend/*/__pycache__
+backend/*/migrations
+
+frontend/node_modules
