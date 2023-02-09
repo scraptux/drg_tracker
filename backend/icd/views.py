@@ -220,20 +220,34 @@ def trackOutliersFromUmsteiger(kode, tracked_kode, umsteiger, step, tmp_nodes, t
         tmp_links.append([kode, linked_kode])
         trackOutliers(linked_kode, kode, tmp_nodes, tmp_links, year_start, year_stop)
 
-@api_view()
+@api_view(['GET'])
 def search(request):
+    # get params
     s = request.query_params.get('s')
     year = request.query_params.get('year')
-    if year:
-        kodes = Kodes.objects.filter(Year=Version.objects.get(Year=year)).filter(Q(Code__icontains=s) | Q(CodeOhnePunkt__icontains=s) | Q(Titel__icontains=s))
+    if not s:
+        return JsonResponse({}, status=status.HTTP_400_BAD_REQUEST)
+    if not year:
+        year = 2023
     else:
-        kodes = Kodes.objects.filter(Year=Version.objects.get(Year=2023)).filter(Q(Code__icontains=s) | Q(CodeOhnePunkt__icontains=s) | Q(Titel__icontains=s))
+        year = int(year)
+    # set year
+    kodes = Kodes.objects.filter(Year=Version.objects.get(Year=year))
+    # filter for code
     res = []
-    for kode in kodes:
+    searchResponseJSON(kodes.filter(Q(Code__icontains=s) | Q(CodeOhnePunkt__icontains=s)), res)
+    # filter for text
+    for splice in s.split(' '):
+        kodes = kodes.filter(Titel__icontains=splice)
+    searchResponseJSON(kodes, res)
+    # return
+    return Response(res)
+
+def searchResponseJSON(kodes_list, res):
+    for kode in kodes_list:
         res.append({
             'Titel': kode.Titel,
             'Code': kode.Code,
             'CodeOhnePunkt': kode.CodeOhnePunkt,
             'Year': kode.Year.Year
         })
-    return Response(res)
