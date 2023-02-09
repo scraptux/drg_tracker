@@ -27,10 +27,48 @@
         </router-link>
       </div>
       <div class="relative mt-8 mb-3" style="height: 152px">
-        <div class="absolute w-full h-full" style="filter: invert(40%)">
-          <TrackingSVG :drg="'icd'" :code="'R008'" :year="2022" :years="[2009, 2023]"></TrackingSVG>
+        <div class="absolute w-full h-full opacity-70">
+          <div id="timeline-container">
+            <svg viewBox="0 0 1460 190" style="max-height: 152px;" class="mx-auto"><g>
+              <text x="130" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2010</text>
+              <text x="230" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2011</text>
+              <text x="330" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2012</text>
+              <text x="430" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2013</text>
+              <text x="530" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2014</text>
+              <text x="630" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2015</text>
+              <text x="730" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2016</text>
+              <text x="830" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2017</text>
+              <text x="930" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2018</text>
+              <text x="1030" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2019</text>
+              <text x="1130" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2020</text>
+              <text x="1230" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2021</text>
+              <text x="1330" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2022</text>
+              <text x="1430" y="130" dy="50" font-weight="500" font-size="20" style="text-anchor: middle; fill: rgb(241, 245, 249);">2023</text>
+              <path d="M130,130C180,130 80,130 1430,130" style="fill: none; stroke: #3730A3; stroke-width: 5px;"></path>
+              <path d="M930,130C980,130 980,30 1030,30" style="fill: none; stroke: #3730A3; stroke-width: 5px;"></path>
+              <path d="M1030,30C1080,30 1080,30 1430,30" style="fill: none; stroke: #3730A3; stroke-width: 5px;"></path>
+              <g class="circle"><circle cx="130" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="130" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="230" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="230" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="330" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="330" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="430" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="430" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="530" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="530" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="630" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="630" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="730" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="730" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="830" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="830" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="930" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="930" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="1030" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="1030" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="1130" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="1130" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="1230" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="1230" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="1330" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="1330" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="1430" cy="130" r="10" style="fill: #4F46E5;"></circle><text x="1430" y="130" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.8</text></g>
+              <g class="circle"><circle cx="1030" cy="30" r="10" style="fill: #4F46E5;"></circle><text x="1030" y="30" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.3</text></g>
+              <g class="circle"><circle cx="1130" cy="30" r="10" style="fill: #4F46E5;"></circle><text x="1130" y="30" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.3</text></g>
+              <g class="circle"><circle cx="1230" cy="30" r="10" style="fill: #4F46E5;"></circle><text x="1230" y="30" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.3</text></g>
+              <g class="circle"><circle cx="1330" cy="30" r="10" style="fill: #4F46E5;"></circle><text x="1330" y="30" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.3</text></g>
+              <g class="circle"><circle cx="1430" cy="30" r="10" style="fill: #4F46E5;"></circle><text x="1430" y="30" dx="0" dy="-15" font-weight="300" style="text-anchor: middle; fill: rgb(203, 213, 225);">R00.3</text></g>
+            </g></svg>
+          </div>
         </div>
-      
         <div class="absolute w-full h-full bg-gradient-to-l from-transparent to-gray-800"></div>
       </div>
     </div>
@@ -47,16 +85,8 @@
       </a>
     </div>
     <p class="mt-6 text-sm text-slate-500 sm:mt-0">
-      © <!-- -->2023<!-- --> Thomas Jasny. Alle Rechte vorbehalten.
+      © 2023 Thomas Jasny. Alle Rechte vorbehalten.
     </p>
   </div>
 </div>
 </template>
-
-<script>
-import TrackingSVG from '@/components/TrackingSVG.vue'
-
-export default {
-  components: { TrackingSVG }
-}
-</script>
