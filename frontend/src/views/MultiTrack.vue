@@ -204,8 +204,9 @@
                        (!item.loading && item.data.status_code == 0) ? 'bg-green-200 hover:bg-green-100' : '',
                        (!item.loading && (item.edit_code == 1 || item.edit_code == 3)) ? 'bg-green-100 hover:bg-green-50' : '',
                        (!item.loading && item.data.status_code == 1 && (item.edit_code == 0 || item.edit_code == 2)) ? 'bg-yellow-200 hover:bg-yellow-100' : '',
-                       (!item.loading && item.data.status_code == 2 && (item.edit_code == 0 || item.edit_code == 2)) ? 'bg-red-200 hover:bg-red-100' : '']"
-              class="px-4 py-5 grid grid-cols-12 gap-4 hover:bg-gray-100 w-full border-x border-b border-gray-300"
+                       (!item.loading && item.data.status_code == 2 && (item.edit_code == 0 || item.edit_code == 2)) ? 'bg-orange-200 hover:bg-orange-100' : '',
+                       (!item.loading && item.data.status_code == 3 && (item.edit_code == 0 || item.edit_code == 2)) ? 'bg-red-200 hover:bg-red-100' : '']"
+              class="px-4 py-5 grid grid-cols-12 gap-4 w-full border-x border-b border-gray-300"
               v-for="(item, key, index) in tracking_items" :key="item.Code">
             <dt class="text-sm font-medium col-span-1 text-left text-gray-500">
               {{ (item.loading) ? key : item.data.code.Code }}
@@ -1007,7 +1008,7 @@ export default {
       await axios.post(`${this.$baseURL}/api/share/code/`, {"JSON": data}).then(res => {
         //console.log(res.data)
         //alert(res.data.Code)
-        this.shareCode = this.$baseURL.substring(0, this.$baseURL.length-5)+'/track/'+res.data.Code
+        this.shareCode = this.$baseURL+'/track/'+res.data.Code
       })
     },
     async loadTrackingInfo(drg, code) {

@@ -1,9 +1,7 @@
-from rest_framework import viewsets
-from rest_framework.views import APIView
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Q
 
@@ -80,7 +78,7 @@ class KodesViewSet(viewsets.ReadOnlyModelViewSet):
                 self.queryset = self.queryset.filter(Code__exact=codeexact)
                 return self.queryset
 
-@api_view()
+@api_view(['GET'])
 def get_dreisteller(request):
     year = request.query_params.get('year')
     grvon = request.query_params.get('grvon')
@@ -99,80 +97,68 @@ def get_dreisteller(request):
             'DTi': dcode.DTi
         }]
         return Response(context)
+    return JsonResponse({}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view()
 def track(request):
-    year = request.query_params.get('year')
-    overview = request.query_params.get('overview')
-    get_nodes = request.query_params.get('get_nodes')
-    if not year:
-        year_start = int(request.query_params.get('year_start'))
-        year = year_stop = int(request.query_params.get('year_stop'))
-    else:
-        year_start = request.query_params.get('year_start')
-        year_stop = request.query_params.get('year_stop')
-        if year_start and year_stop:
-            year_start = int(year_start)
-            year_stop = int(year_stop)
-            if int(year) < year_start:
-                year = str(year_start)
-            elif int(year) > year_stop:
-                year = str(year_stop)
-        else:
-            years = Version.objects.order_by('Year')
-            year_start = years.first().Year
-            year_stop = years.last().Year
-    if overview:
-        complete_results = False
-    else:
-        complete_results = True
-    if get_nodes:
-        only_nodes = True
-    else:
-        only_nodes = False
+    # get params
+    year_start = request.query_params.get('year_start')
+    year_stop = request.query_params.get('year_stop')
+    year_param = request.query_params.get('year')
+    code_param = request.query_params.get('code')
+    if not year_start or not year_stop or not year_param or not code_param:
+        return JsonResponse({}, status=status.HTTP_400_BAD_REQUEST)
+    year_start = int(year_start)
+    year_stop = int(year_stop)
+    year_param = int(year_param)
+    if year_param < year_start:
+        year_param = year_start
+    elif year_param > year_stop:
+        year_param = year_stop
 
-    code = request.query_params.get('code')
-    year_object = Version.objects.get(Year=year)
-    group = Kodes.objects.get(Code__exact=code, Year=year_object)
-    tracking = []
-    subcodes = Kodes.objects.filter(Code__startswith=code, Year=year_object)
-    if subcodes.count() != 1:
-        for kode in subcodes:
-            if not Umsteiger.objects.filter(Q(Old=kode) | Q(New=kode)):
-                continue
-            tracking.append(kode)
-    else:
-        tracking = [Kodes.objects.get(Code__exact=code, Year=year_object)]
-
-    checked = []
-    checked.extend(tracking)
-    nodes = []
-    links = []
-    for code in tracking:
-        tmp_nodes, tmp_links = trackPaths(code, checked, year_start, year_stop)
-        nodes.extend(tmp_nodes)
-        nodes.extend([{"x": code.Code, "y": code.Year.Year, "text": code.Code}])
-        links.extend(tmp_links)
-    
-    codes_list = []
-    years_list = []
-    for node in nodes:
-        if node["x"] not in codes_list:
-            codes_list.append(node["x"])
-        #if node["y"] not in years_list:
-            #years_list.append(node["y"])
+    # track codes
+    problem_code = 0  # 0:green, 1:yellow, 2:orange, 3:red
+    tmp_nodes = []
+    tmp_links = []
     for year in range(year_start, year_stop+1):
-        #print(year)
-        years_list.append(year)
+        year_object = Version.objects.get(Year=year)
+        subcodes = Kodes.objects.filter(Code__startswith=code_param, Year=year_object)
+        if subcodes.count() == 0:  # no code in that year
+            problem_code = 3
+            continue
+        for kode in subcodes:
+            if not Umsteiger.objects.filter(Q(Old=kode) | Q(New=kode)):  # not in list and would be added without links
+                continue
+            tmp_nodes.append(kode)
+            if kode.Year.Year > year_start:
+                problem_code2 = trackFromUmsteiger(kode, Umsteiger.objects.filter(New=kode), -1, tmp_nodes, tmp_links, year_start, year_stop, code_param)
+                if problem_code < problem_code2:
+                    problem_code = problem_code2
+            if kode.Year.Year < year_stop:
+                problem_code2 = trackFromUmsteiger(kode, Umsteiger.objects.filter(Old=kode), 1, tmp_nodes, tmp_links, year_start, year_stop, code_param)
+                if problem_code < problem_code2:
+                    problem_code = problem_code2
+
+    # create axis
+    codes_list = []
+    for node in tmp_nodes:
+        if node.Code in codes_list:
+            continue
+        codes_list.append(node.Code)
     codes_list.sort()
+    years_list = []
+    for year in range(year_start, year_stop+1):
+        years_list.append(year)
     years_list.sort()
 
-    if only_nodes:
+    # TODO: add to normal return
+    if request.query_params.get('get_nodes'):
         res = []
         for c in codes_list:
             res.append({'Code': c})
         return Response(codes_list)
 
+    # create coordinates
     x = {}
     for idx, code in enumerate(codes_list):
         x[code] = idx
@@ -180,134 +166,80 @@ def track(request):
     for idx, key in enumerate(years_list):
         y[key] = idx
     
-    # nodes = [{'x': code.Code, 'y': code.Year.Year, 'text': code.Code}, ...]
-    # becomes
-    # nodes = [{'x': code-coords, 'y': year-coords, 'text': code.Code}, ...]
-    for node in nodes:
-        node['x'] = x[node['x']]
-        node['y'] = y[node['y']]
-    # links = [{'source': {'x': code.Code, 'y': code.Year.Year}, 'target': {'x': new.Code, 'y': new.Year.Year}}, ...]
-    # becomes
-    # links = [{'source': {'x': code-coords, 'y': year-coords}, 'target': {'x': newcode-coords, 'y': newyear-coords}}, ...]
-    for link in links:
-        link['source']['x'] = x[link['source']['x']]
-        link['source']['y'] = y[link['source']['y']]
-        link['target']['x'] = x[link['target']['x']]
-        link['target']['y'] = y[link['target']['y']]
-
-    if not complete_results:
-        # check for problem
-        problem_code = 0
-        # problem might exist if: split/merged
-        nodes_to_examine = []
-        for link in links:
-            if link['source']['x'] != link['target']['x']:
-                problem_code = 1
-                nodes_to_examine.append(link['source']['x'])
-        # problem exists if: code changed                       ! or new/deleted code (not checked)
-        nodes_examined = {} # counts how many connections to the same code exist (should be year-count)
-        """for link in links:
-            if link['source']['x'] not in nodes_to_examine:
-                continue
-            if link['source']['x'] not in nodes_examined:
-                nodes_examined[link['source']['x']] = 0
-            if link['source']['x'] == link['target']['x']:
-                nodes_examined[link['source']['x']] += 1
-        for node in nodes_examined:
-            if nodes_examined[node] != (len(y)-1)*2:
-                for n in nodes:
-                    if n['text'] == code:
-                        problem_code=2
-                        break
-                #print(code, "2")
-                #problem_code = 2
-                #break"""
-        for link in links:
-            if link['source']['x'] in nodes_to_examine:
-                if link['source']['x'] not in nodes_examined:
-                    nodes_examined[link['source']['x']] = {}
-                if link['source']['y'] not in nodes_examined[link['source']['x']]:
-                    nodes_examined[link['source']['x']][link['source']['y']] = 0
-                nodes_examined[link['source']['x']][link['source']['y']] += 1
-            if link['target']['x'] in nodes_to_examine:
-                if link['target']['x'] not in nodes_examined:
-                    nodes_examined[link['target']['x']] = {}
-                if link['target']['y'] not in nodes_examined[link['target']['x']]:
-                    nodes_examined[link['target']['x']][link['target']['y']] = 0
-                nodes_examined[link['target']['x']][link['target']['y']] += 1
-        for node in nodes_examined:
-            #for idx, year in enumerate(y):
-            for year in nodes_examined[node]:
-                if year == 0 or year == len(y)-1:
-                    if nodes_examined[node][year] < 2:
-                        problem_code = 2
-                        break
-                else:
-                    if nodes_examined[node][year] < 4:
-                        problem_code = 2
-                        break
-            if problem_code == 2:
-                break
-        # if problem return error message and code
-        groupcode = Kodes.objects.get(Code__exact=code[0:5], Year=year_object)
-        res = {
-            'status_code': problem_code,
-            #'code': group
-            'code': {'KapNr': group.KapNr.KapNr,
-                     'KapTi': group.KapNr.KapTi,
-                     'GrVon': group.GrVon.GrVon,
-                     'GrBis': group.GrVon.GrBis,
-                     'GrTi': group.GrVon.GrTi,
-                     'DCode': group.DCode.DCode,
-                     'DTi': group.DCode.DTi,
-                     'GruppeCode': groupcode.Code,
-                     'GruppeCodeNorm': groupcode.Code,
-                     'Code': group.Code,
-                     'Titel': group.Titel,
-                     'Year': group.Year.Year}
-        }
-        return Response(res)
-    
+    # create nodes and links
+    nodes = []
+    for node in tmp_nodes:
+        nodes.append({'x': x[node.Code], 'y': y[node.Year.Year], 'text': node.Code})
+    links = []
+    for link in tmp_links:
+        links.append({
+            'source': {'x': x[link[0].Code], 'y': y[link[0].Year.Year]}, 
+            'target': {'x': x[link[1].Code], 'y': y[link[1].Year.Year]}
+        })
+        
+    # return results
     years = [{'y': y, 'text': text} for text, y in y.items()]
+    year_object = Version.objects.get(Year=year_param)
+    group = Kodes.objects.get(Code__exact=code_param, Year=year_object)
+    groupcode = Kodes.objects.get(Code__exact=code_param[0:5], Year=year_object)
     res = {
         'nodes': nodes,
         'links': links,
         'years': years,
-        'code_count': len(x)
+        'code_count': len(x),
+        'status_code': problem_code,
+        'code': {'KapNr': group.KapNr.KapNr,
+                 'KapTi': group.KapNr.KapTi,
+                 'GrVon': group.GrVon.GrVon,
+                 'GrBis': group.GrVon.GrBis,
+                 'GrTi': group.GrVon.GrTi,
+                 'DCode': group.DCode.DCode,
+                 'DTi': group.DCode.DTi,
+                 'GruppeCode': groupcode.Code,
+                 'GruppeCodeNorm': groupcode.Code,
+                 'Code': group.Code,
+                 'Titel': group.Titel,
+                 'Year': group.Year.Year}
     }
     return Response(res)
 
-def trackPaths(code, checked_codes, start, stop):
-    nodes = []
-    links = []
-    if code.Year.Year < stop:
-        for umstieg in Umsteiger.objects.filter(Old=code):
-            new = umstieg.New
-            if new is None:
-                continue
-            links.append({"source": {"x": code.Code, "y": code.Year.Year}, "target": {"x": new.Code, "y": new.Year.Year}})
-            if new in checked_codes:
-                continue
-            nodes.append({"x": new.Code, "y": new.Year.Year, "text": new.Code})
-            checked_codes.append(new)
-            nnodes, nlinks = trackPaths(new, checked_codes, start, stop)
-            nodes.extend(nnodes)
-            links.extend(nlinks)
-    if code.Year.Year > start:
-        for umstieg in Umsteiger.objects.filter(New=code):
-            old = umstieg.Old
-            if old is None:
-                continue
-            links.append({"source": {"x": old.Code, "y": old.Year.Year}, "target": {"x": code.Code, "y": code.Year.Year}})
-            if old in checked_codes:
-                continue
-            nodes.append({"x": old.Code, "y": old.Year.Year, "text": old.Code})
-            checked_codes.append(old)
-            nnodes, nlinks = trackPaths(old, checked_codes, start, stop)
-            nodes.extend(nnodes)
-            links.extend(nlinks)
-    return nodes, links
+def trackFromUmsteiger(kode, umsteiger, step, tmp_nodes, tmp_links, year_start, year_stop, code_param):
+    problem_code = 0
+    non_straight_line_found = False
+    for umstieg in umsteiger:  # check previous year
+        linked_kode = umstieg.Old if step == -1 else umstieg.New
+        if not linked_kode:  # loose node
+            if problem_code < 2:
+                problem_code = 2
+            continue
+        if linked_kode in tmp_nodes:  # code already in linked
+            continue
+        if not non_straight_line_found and linked_kode.Code != kode.Code:  # non straight connection found
+            non_straight_line_found = True
+        if code_param not in linked_kode.Code:  # code not included in search query
+            if problem_code < 2:
+                problem_code = 2
+            trackOutliers(linked_kode, kode, tmp_nodes, tmp_links, year_start, year_stop)
+        tmp_links.append([kode, linked_kode])
+    if non_straight_line_found:  # non straight connections found
+        if problem_code < 1:
+            problem_code = 1
+    return problem_code
 
+def trackOutliers(kode, tracked_kode, tmp_nodes, tmp_links, year_start, year_stop):
+    tmp_nodes.append(kode)
+    if kode.Year.Year > year_start:
+        trackOutliersFromUmsteiger(kode, tracked_kode, Umsteiger.objects.filter(New=kode), -1, tmp_nodes, tmp_links, year_start, year_stop)
+    if kode.Year.Year < year_stop:
+        trackOutliersFromUmsteiger(kode, tracked_kode, Umsteiger.objects.filter(Old=kode), 1, tmp_nodes, tmp_links, year_start, year_stop)
+
+def trackOutliersFromUmsteiger(kode, tracked_kode, umsteiger, step, tmp_nodes, tmp_links, year_start, year_stop):
+    for umstieg in umsteiger:
+        linked_kode = umstieg.Old if step == -1 else umstieg.New
+        if linked_kode == tracked_kode:  # do not traverse backwards
+            continue
+        tmp_links.append([kode, linked_kode])
+        trackOutliers(linked_kode, kode, tmp_nodes, tmp_links, year_start, year_stop)
 
 @api_view()
 def search(request):
