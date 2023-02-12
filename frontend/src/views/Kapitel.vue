@@ -70,15 +70,15 @@ export default {
       var drg = this.$route.params.drg;
       var year_param = this.$route.params.year;
       var kapitel_param = this.$route.params.kapitel;
-      await axios.get(`${this.$baseURL}/api/${drg}/version/${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
         this.year = res.data
         this.loading--
       });
-      await axios.get(`${this.$baseURL}/api/${drg}/kapitel/?year=${year_param}&kapitel=${kapitel_param}`).then(res => {
+      await axios.get(`/api/${drg}/kapitel/?year=${year_param}&kapitel=${kapitel_param}`).then(res => {
         this.kapitel = res.data[0]
         this.loading--
       });
-      await axios.get(`${this.$baseURL}/api/${drg}/gruppe/?year=${year_param}&kapitel=${kapitel_param}`).then(res => {
+      await axios.get(`/api/${drg}/gruppe/?year=${year_param}&kapitel=${kapitel_param}`).then(res => {
         this.gruppen = res.data
         this.loading--
       })

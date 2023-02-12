@@ -124,30 +124,30 @@ export default {
       this.ebene_lowest = drg == 'icd' ? 4 : 5
       var year_param = this.$route.params.year
       var code_param = this.$route.params.code
-      await axios.get(`${this.$baseURL}/api/${drg}/version/${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
         this.year = res.data
         this.loading--
       })
-      await axios.get(`${this.$baseURL}/api/${drg}/kode/?year=${year_param}&codestart=${code_param}`).then(res => {
+      await axios.get(`/api/${drg}/kode/?year=${year_param}&codestart=${code_param}`).then(res => {
         this.kodes = res.data
         this.loading--
       })
-      await axios.get(`${this.$baseURL}/api/${drg}/kode/?year=${year_param}&codeexact=${code_param}`).then(async res => {
+      await axios.get(`/api/${drg}/kode/?year=${year_param}&codeexact=${code_param}`).then(async res => {
         this.kode_gruppe = res.data[0]
         this.loading--
         if (drg == 'ops') {
-          await axios.get(`${this.$baseURL}/api/${drg}/dreisteller/?year=${year_param}&did=${this.kode_gruppe.DCode}`).then(res => {
+          await axios.get(`/api/${drg}/dreisteller/?year=${year_param}&did=${this.kode_gruppe.DCode}`).then(res => {
             this.dkode = res.data[0]
             this.loading--
           })
         } else {
           this.loading--
         }
-        await axios.get(`${this.$baseURL}/api/${drg}/gruppe/?year=${year_param}&grid=${this.kode_gruppe.GrVon}`).then(res => {
+        await axios.get(`/api/${drg}/gruppe/?year=${year_param}&grid=${this.kode_gruppe.GrVon}`).then(res => {
           this.gruppe = res.data[0]
           this.loading--
         })
-        await axios.get(`${this.$baseURL}/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kode_gruppe.KapNr}`).then(res => {
+        await axios.get(`/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kode_gruppe.KapNr}`).then(res => {
           this.kapitel = res.data[0]
           this.loading--
         })

@@ -104,14 +104,14 @@ export default {
         this.loading = 2;
         this.results_icd = [];
         this.results_ops = [];
-        await axios.get(`${this.$baseURL}/api/icd/search/?s=${s}`).then(res => {
+        await axios.get(`/api/icd/search/?s=${s}`).then(res => {
           this.results_icd = res.data;
           this.loading -= 1;
           if (this.results_icd.length > 0) {
             this.tab_value = 0;
           }
         });
-        await axios.get(`${this.$baseURL}/api/ops/search/?s=${s}`).then(res => {
+        await axios.get(`/api/ops/search/?s=${s}`).then(res => {
           this.results_ops = res.data;
           this.loading -= 1;
           if (this.results_ops.length > 0 && this.tab_value == -1) {
