@@ -130,13 +130,6 @@ def track(request):
         years_list.append(year)
     years_list.sort()
 
-    # TODO: add to normal return
-    if request.query_params.get('get_nodes'):
-        res = []
-        for c in codes_list:
-            res.append({'Code': c})
-        return Response(codes_list)
-
     # create coordinates
     x = {}
     for idx, code in enumerate(codes_list):
@@ -166,6 +159,7 @@ def track(request):
         'links': links,
         'years': years,
         'code_count': len(x),
+        'code_list': codes_list,
         'status_code': problem_code,
         'code': {'KapNr': group.KapNr.KapNr,
                  'KapTi': group.KapNr.KapTi,
@@ -198,27 +192,27 @@ def trackFromUmsteiger(kode, umsteiger, step, tmp_nodes, tmp_links, year_start, 
         if code_param not in linked_kode.CodeOhnePunkt:  # code not included in search query
             if problem_code < 2:
                 problem_code = 2
-            trackOutliers(linked_kode, kode, tmp_nodes, tmp_links, year_start, year_stop)
+            trackOutliers(linked_kode, tmp_nodes, tmp_links, year_start, year_stop)
         tmp_links.append([kode, linked_kode])
     if non_straight_link_found:  # non straight connections found
         if problem_code < 1:
             problem_code = 1
     return problem_code
 
-def trackOutliers(kode, tracked_kode, tmp_nodes, tmp_links, year_start, year_stop):
+def trackOutliers(kode, tmp_nodes, tmp_links, year_start, year_stop):
     tmp_nodes.append(kode)
     if kode.Year.Year > year_start:
-        trackOutliersFromUmsteiger(kode, tracked_kode, Umsteiger.objects.filter(New=kode), -1, tmp_nodes, tmp_links, year_start, year_stop)
+        trackOutliersFromUmsteiger(kode, Umsteiger.objects.filter(New=kode), -1, tmp_nodes, tmp_links, year_start, year_stop)
     if kode.Year.Year < year_stop:
-        trackOutliersFromUmsteiger(kode, tracked_kode, Umsteiger.objects.filter(Old=kode), 1, tmp_nodes, tmp_links, year_start, year_stop)
+        trackOutliersFromUmsteiger(kode, Umsteiger.objects.filter(Old=kode), 1, tmp_nodes, tmp_links, year_start, year_stop)
 
-def trackOutliersFromUmsteiger(kode, tracked_kode, umsteiger, step, tmp_nodes, tmp_links, year_start, year_stop):
+def trackOutliersFromUmsteiger(kode, umsteiger, step, tmp_nodes, tmp_links, year_start, year_stop):
     for umstieg in umsteiger:
         linked_kode = umstieg.Old if step == -1 else umstieg.New
-        if linked_kode == tracked_kode:  # do not traverse backwards
+        if linked_kode in tmp_nodes:
             continue
         tmp_links.append([kode, linked_kode])
-        trackOutliers(linked_kode, kode, tmp_nodes, tmp_links, year_start, year_stop)
+        trackOutliers(linked_kode, tmp_nodes, tmp_links, year_start, year_stop)
 
 @api_view(['GET'])
 def search(request):

@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import 'nouislider/dist/nouislider.min.css'
 
 const app = createApp(App).component('font-awesome-icon', FontAwesomeIcon)
-app.config.globalProperties.$baseURL = window.location.protocol+'//'+window.location.hostname+':'+8000
+app.config.globalProperties.$baseURL = window.location.protocol+'//'+window.location.hostname
 
 app.use(router)
 app.mount('#app')
