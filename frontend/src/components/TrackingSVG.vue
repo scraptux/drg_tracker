@@ -13,26 +13,15 @@ import LoadingAnimation from '@/components/LoadingAnimation.vue'
 
 export default {
   name: 'TrackingSVG',
-  props: ['drg', 'code', 'year', 'years'],
-  /*props: {
-    drg: {type: String},
-    code: {type: String},
-    year: {type: String},
-    years: {
-      type: Object,
-      required: true
-    }
-  },*/
+  props: ['drg', 'code', 'year', 'years', 'data'],
   watch: {
     years: {
       handler: function(newYears, oldYears) {
-        //console.log("called")
-        //console.log(this.years)
+        if (newYears[0] == oldYears[0] && newYears[1] == oldYears[1]) {
+          return
+        }
         if (this.svg.loaded) {
-          //console.log("calling")
-          this.createTimeline(newYears[0], newYears[1])
           this.svg.loaded = false
-          console.log(newYears[0], newYears[1])
           this.loadSVGData(newYears[0], newYears[1])
         }
       },
@@ -42,40 +31,40 @@ export default {
   data() {
     return {
       svg: {
-        'loaded': false
+        'loaded': true
       }
     }
   },
-  async created() {
-    this.loadSVGData(this.years[0], this.years[1])
-    //this.createTimeline(0, 30);
+  async mounted() {
+    if (this.data) {
+      this.svg = this.data
+      this.svg.loaded = true
+      this.createTimeline()
+    } else if (this.drg && this.code && this.year && this.years) {
+      this.svg.loaded = false
+      this.loadSVGData(this.years[0], this.years[1])
+    }
   },
   methods: {
     async loadSVGData(start_year, stop_year) {
       try {
-        //await axios.get(`${this.$baseURL}/api/${this.drg}/track/?year=${this.year}&code=${this.code}`).then(async res => {
-        await axios.get(`${this.$baseURL}/api/${this.drg}/track/?code=${this.code}&year_start=${start_year}&year_stop=${stop_year}&year=${this.year}`).then(async res => {
+        await axios.get(`/api/${this.drg}/track/?code=${this.code}&year_start=${start_year}&year_stop=${stop_year}&year=${this.year}`).then(async res => {
           this.svg.years = res.data.years
           this.svg.nodes = res.data.nodes
           this.svg.links = res.data.links
           this.svg.code_count = res.data.code_count
           this.svg.loaded = true
-
-          //console.log(this.svg.years[this.svg.years.length-1].text)
-          //this.createTimeline(this.years[0], this.years[1])
         })
       } catch(e) {
         console.log(e)
       }
-      this.createTimeline(this.svg.years[0].text, this.svg.years[this.svg.years.length-1].text)
+      this.createTimeline()
     },
-    createTimeline(start_year, stop_year) { // start_year and stop_year take indices
-      //console.log("drawing")
+    createTimeline() { // start_year and stop_year take indices
       var getCoords = this.getCoords
       var data = this.svg
-      //console.log(data)
-      start_year = parseInt(start_year)-parseInt(data.years[0].text)
-      stop_year = parseInt(stop_year)-parseInt(data.years[0].text)
+      var start_year = 0
+      var stop_year = data.years.length-1
 
       var years_adj = [];
       data.years.forEach((year) => {
