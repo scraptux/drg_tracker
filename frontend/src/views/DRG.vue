@@ -50,7 +50,7 @@ export default {
   async created() {
     try {
       var drg = this.$route.params.drg;
-      await axios.get(`${this.$baseURL}/api/${drg}/version/`).then(res => {
+      await axios.get(`/api/${drg}/version/`).then(res => {
         this.years = res.data;
         this.loading--;
       });

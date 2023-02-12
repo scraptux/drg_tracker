@@ -90,19 +90,19 @@ export default {
       var drg = this.$route.params.drg;
       var year_param = this.$route.params.year
       var grvon_param = this.$route.params.gruppe
-      await axios.get(`${this.$baseURL}/api/${drg}/version/${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
         this.year = res.data
         this.loading--
       })
       var link = this.$route.params.drg == 'icd' ? 'kode' : 'dreisteller'
-      await axios.get(`${this.$baseURL}/api/${drg}/${link}/?year=${year_param}&grvon=${grvon_param}`).then(async res => {
+      await axios.get(`/api/${drg}/${link}/?year=${year_param}&grvon=${grvon_param}`).then(async res => {
         this.kodes = res.data
         this.loading--
-        await axios.get(`${this.$baseURL}/api/${drg}/gruppe/?year=${year_param}&grid=${this.kodes[0].GrVon}`).then(res => {
+        await axios.get(`/api/${drg}/gruppe/?year=${year_param}&grid=${this.kodes[0].GrVon}`).then(res => {
           this.gruppe = res.data[0]
           this.loading--
         })
-        await axios.get(`${this.$baseURL}/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kodes[0].KapNr}`).then(res => {
+        await axios.get(`/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kodes[0].KapNr}`).then(res => {
           this.kapitel = res.data[0]
           this.loading--
         })

@@ -60,11 +60,11 @@ export default {
     try {
       var drg = this.$route.params.drg;
       var year_param = this.$route.params.year;
-      await axios.get(`${this.$baseURL}/api/${drg}/version/${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
         this.year = res.data
         this.loading--
       });
-      await axios.get(`${this.$baseURL}/api/${drg}/kapitel/?year=${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/kapitel/?year=${year_param}`).then(res => {
         this.kapitel = res.data
         this.loading--
       });

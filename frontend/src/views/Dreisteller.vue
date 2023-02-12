@@ -92,22 +92,22 @@ export default {
       var drg = 'ops';
       var year_param = this.$route.params.year
       var dcode_param = this.$route.params.dcode
-      await axios.get(`${this.$baseURL}/api/${drg}/version/${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
         this.year = res.data
         this.loading--
       })
-      await axios.get(`${this.$baseURL}/api/${drg}/kode/?year=${year_param}&dcode=${dcode_param}`).then(async res => {
+      await axios.get(`/api/${drg}/kode/?year=${year_param}&dcode=${dcode_param}`).then(async res => {
         this.kodes = res.data
         this.loading--
-        await axios.get(`${this.$baseURL}/api/${drg}/dreisteller/?year=${year_param}&did=${this.kodes[0].DCode}`).then(res => {
+        await axios.get(`/api/${drg}/dreisteller/?year=${year_param}&did=${this.kodes[0].DCode}`).then(res => {
           this.dreisteller = res.data[0]
           this.loading--
         })
-        await axios.get(`${this.$baseURL}/api/${drg}/gruppe/?year=${year_param}&grid=${this.kodes[0].GrVon}`).then(res => {
+        await axios.get(`/api/${drg}/gruppe/?year=${year_param}&grid=${this.kodes[0].GrVon}`).then(res => {
           this.gruppe = res.data[0]
           this.loading--
         })
-        await axios.get(`${this.$baseURL}/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kodes[0].KapNr}`).then(res => {
+        await axios.get(`/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kodes[0].KapNr}`).then(res => {
           this.kapitel = res.data[0]
           this.loading--
         })

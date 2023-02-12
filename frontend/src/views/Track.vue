@@ -115,35 +115,35 @@ export default {
       var drg = this.$route.params.drg
       var year_param = this.$route.params.year
       var code_param = this.$route.params.code
-      await axios.get(`${this.$baseURL}/api/${drg}/version/${year_param}`).then(res => {
+      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
         this.year = res.data
         this.loading--
       })
-      await axios.get(`${this.$baseURL}/api/${drg}/version`).then(res => {
+      await axios.get(`/api/${drg}/version`).then(res => {
         this.years = [res.data[0].Year, res.data[res.data.length-1].Year]
         this.available_years = res.data
         this.loading--
       })
-      await axios.get(`${this.$baseURL}/api/${drg}/kode/?year=${year_param}&codeexact=${code_param}`).then(async res => {
+      await axios.get(`/api/${drg}/kode/?year=${year_param}&codeexact=${code_param}`).then(async res => {
         this.kode = res.data[0]
         this.loading--
-        await axios.get(`${this.$baseURL}/api/${drg}/kode/?year=${year_param}&codeexact=${(drg=='ops') ? code_param.slice(0,5) : code_param.slice(0,3)}`).then(res => {
+        await axios.get(`/api/${drg}/kode/?year=${year_param}&codeexact=${(drg=='ops') ? code_param.slice(0,5) : code_param.slice(0,3)}`).then(res => {
           this.kode_gruppe = res.data[0]
           this.loading--
         })
         if (drg == 'ops') {
-          await axios.get(`${this.$baseURL}/api/${drg}/dreisteller/?year=${year_param}&did=${this.kode.DCode}`).then(res => {
+          await axios.get(`/api/${drg}/dreisteller/?year=${year_param}&did=${this.kode.DCode}`).then(res => {
             this.dkode = res.data[0]
             this.loading--
           })
         } else {
           this.loading--
         }
-        await axios.get(`${this.$baseURL}/api/${drg}/gruppe/?year=${year_param}&grid=${this.kode.GrVon}`).then(res => {
+        await axios.get(`/api/${drg}/gruppe/?year=${year_param}&grid=${this.kode.GrVon}`).then(res => {
           this.gruppe = res.data[0]
           this.loading--
         })
-        await axios.get(`${this.$baseURL}/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kode.KapNr}`).then(res => {
+        await axios.get(`/api/${drg}/kapitel/?year=${year_param}&kapid=${this.kode.KapNr}`).then(res => {
           this.kapitel = res.data[0]
           this.loading--
         })
