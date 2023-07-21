@@ -6,3 +6,5 @@ backend/*/migrations
 
 frontend/node_modules
 frontend/dist
+
+.hypothesis/
