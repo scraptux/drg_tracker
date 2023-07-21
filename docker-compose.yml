@@ -3,12 +3,16 @@ services:
     build: frontend
     container_name: drg_tracker_frontend
     ports:
-    - "80:80"
+      - "80:80"
+    restart: unless-stopped
   backend:
     build: backend
     container_name: drg_tracker_backend
     environment:
-      SECRET_KEY: INSERT_RANDOM_LONG_STRING
-      HOSTNAME: INSERT_HOSTNAME
+      - PUID=1000
+      - PGID=1000
+      - SECRET_KEY=INSERT_RANDOM_LONG_STRING
+      - HOSTNAME=INSERT_HOSTNAME
     volumes:
-    - ./data/db.sqlite3:/django/db.sqlite3
+      - ./data/db.sqlite3:/django/db.sqlite3 # sqlite3 data/db.sqlite3 "VACUUM;"
+    restart: unless-stopped
