@@ -8,11 +8,12 @@ services:
   backend:
     build: backend
     container_name: drg_tracker_backend
+    hostname: drg-tracker-backend
     environment:
       - PUID=1000
       - PGID=1000
       - SECRET_KEY=INSERT_RANDOM_LONG_STRING
-      - HOSTNAME=INSERT_HOSTNAME
+      - HOSTNAME=*
     volumes:
       - ./data/db.sqlite3:/django/db.sqlite3 # sqlite3 data/db.sqlite3 "VACUUM;"
     restart: unless-stopped
