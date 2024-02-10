@@ -12,7 +12,8 @@ const routes = [
     { path: '/search/:s', component: () => import('./views/Search.vue') },
     { path: '/track/', component: () => import('./views/MultiTrack.vue') },
     { path: '/track/:sharecode', component: () => import('./views/MultiTrack.vue') },
-    { path: '/impressum', component: () => import('./views/Impressum.vue') }
+    { path: '/impressum', component: () => import('./views/Impressum.vue') },
+    { path: '/:pathMatch(.*)*', component: () => import('./views/404.vue') }
 ]
 
 const router = createRouter({
