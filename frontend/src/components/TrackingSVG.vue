@@ -48,7 +48,7 @@ export default {
   methods: {
     async loadSVGData(start_year, stop_year) {
       try {
-        await axios.get(`/api/${this.drg}/track/?code=${this.code}&year_start=${start_year}&year_stop=${stop_year}&year=${this.year}`).then(async res => {
+        await axios.get(`/api/${this.drg}/track?code=${this.code}&year_start=${start_year}&year_stop=${stop_year}&year=${this.year}`).then(async res => {
           this.svg.years = res.data.years
           this.svg.nodes = res.data.nodes
           this.svg.links = res.data.links

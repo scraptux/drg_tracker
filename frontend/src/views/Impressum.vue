@@ -7,6 +7,7 @@
     <p class="mt-1 text-sm text-slate-500">
       <span class="text-base text-slate-900">Kontakt</span><br>
       Thomas Jasny<br>
+      <span>tho&#x202e;ed.&#x202d;mas&#x202e;moc.&#x202d;@&#x202e;ynsaj&#x202d;</span>
       <br><br>
     </p>
     <p class="mt-1 text-sm text-slate-500">

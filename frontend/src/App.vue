@@ -3,23 +3,35 @@
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
       <div class="relative flex h-16 items-center justify-between">
         <!-- Logo + Navigation -->
-        <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+        <div class="flex items-stretch justify-start">
+          <div @click="navDropdown=1" class="lg:hidden px-3 py-2 fill-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 my-2 mr-2" viewBox="0 0 50 50"><path d="M 5 8 A 2.0002 2.0002 0 1 0 5 12 L 45 12 A 2.0002 2.0002 0 1 0 45 8 L 5 8 z M 5 23 A 2.0002 2.0002 0 1 0 5 27 L 45 27 A 2.0002 2.0002 0 1 0 45 23 L 5 23 z M 5 38 A 2.0002 2.0002 0 1 0 5 42 L 45 42 A 2.0002 2.0002 0 1 0 45 38 L 5 38 z"></path></svg>
+          </div>
+          <div v-if="navDropdown" @click="navDropdown=0" class="backdrop-blur-sm fixed w-full h-full z-40">
+            <div class="absolute left-0 z-40 mt-2 w-56 origin-top-right rounded-md bg-gray-900 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+              <div class="py-1" role="none">
+                <router-link :to="`/icd`" @click="navDropdown=0" class="text-white block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">ICD-Code</router-link>
+                <router-link :to="`/ops`" @click="navDropdown=0" class="text-white block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">OPS-Code</router-link>
+              </div>
+            </div>
+          </div>
+
           <router-link :to="`/`" class="flex flex-shrink-0 items-center">
             <img class="h-8 w-auto" :src="logoSVG">
           </router-link>
           <div class="ml-6">
-            <div class="flex space-x-4">
+            <div class="hidden lg:flex space-x-4">
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-              <router-link :to="`/icd/`" :class="($route.path.slice(0,4) === '/icd')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">ICD-Code</router-link>
-              <router-link :to="`/ops/`" :class="($route.path.slice(0,4) === '/ops')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">OPS-Code</router-link>
+              <router-link :to="`/icd`" :class="($route.path.slice(0,4) === '/icd')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">ICD-Code</router-link>
+              <router-link :to="`/ops`" :class="($route.path.slice(0,4) === '/ops')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">OPS-Code</router-link>
               <router-link :to="`/track`" :class="($route.path.slice(0,6) === '/track')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">Code-Tracking</router-link>
             </div>
           </div>
         </div>
         <!-- Search Bar -->
-        <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-          <div class="relative mx-auto text-gray-400">
-            <input class="bg-gray-700 rounded-md text-sm h-10 w-80 pl-10 focus:outline-none" type="search" name="search" placeholder="Suchen" v-model="searchText" @keyup.enter="search()">
+        <div class="absolute inset-y-0 right-0 flex flex-1 items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          <div class="relative text-gray-400 ml-auto">
+            <input class="bg-gray-700 rounded-md text-sm h-10 w-56 sm:w-64 md:w-80 pl-10 focus:outline-none" type="search" name="search" placeholder="Suchen" v-model="searchText" @keyup.enter="search()">
             <button type="submit" class="absolute left-0 top-0 mr-2" @click="search()">
               <svg class="text-gray-400 h-4 w-4 mt-3 ml-3 fill-current" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px"
@@ -42,7 +54,8 @@ export default {
   data() {
     return {
       searchText: "",
-      logoSVG: require('./assets/logo.svg')
+      logoSVG: require('./assets/logo.svg'),
+      navDropdown: 0
     }
   },
   methods: {

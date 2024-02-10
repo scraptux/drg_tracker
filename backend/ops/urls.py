@@ -1,17 +1,13 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import YearsViewSet, KapitelViewSet, GruppenViewSet, KodesViewSet, get_dreisteller, track, search
-
-router = routers.DefaultRouter()
-router.register(r'version', YearsViewSet)
-router.register(r'kapitel', KapitelViewSet)
-router.register(r'gruppe', GruppenViewSet)
-router.register(r'kode', KodesViewSet)
+from . import views
 
 urlpatterns = [
-    path('dreisteller/', get_dreisteller),
-    path('track/', track),
-    path('search/', search)
+    path('version/', views.version),
+    path('kapitel/', views.kapitel),
+    path('gruppe/', views.gruppen),
+    path('dreisteller/', views.dreisteller),
+    path('kode/', views.kodes),
+    path('track/', views.track),
+    path('search/', views.search)
 ]
-
-urlpatterns += router.urls

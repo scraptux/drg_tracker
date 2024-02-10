@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white">
-    <div v-if="loading==0" class="pt-6">
+    <div v-if="loading==0 && !error" class="pt-6">
       <nav aria-label="Breadcrumb">
-        <ol role="list" class="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+        <ol role="list" class="mx-auto flex max-w-7xl items-center space-x-2 px-4 sm:px-6 lg:px-8">
           <li>
             <div class="flex items-center">
               <router-link :to="`/${$route.params.drg}`" class="mr-2 text-sm font-medium text-gray-900">
@@ -16,7 +16,7 @@
           </li>
           <li>
             <div class="flex items-center">
-              <router-link :to="`/${$route.params.drg}/version/${year.Year}`" class="mr-2 text-sm font-medium text-gray-900">{{ year.Year }}</router-link>
+              <router-link :to="`/${$route.params.drg}/version/${year}`" class="mr-2 text-sm font-medium text-gray-900">{{ year }}</router-link>
               <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
                 <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
               </svg>
@@ -28,26 +28,27 @@
         </ol>
       </nav>
 
-      <div class="mx-auto max-w-2xl space-x-2 px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-8">
+      <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8">
         <h3 class="text-xl font-medium leading-6 text-gray-900">{{ kapitel.KapNr }} - {{kapitel.KapTi}}</h3>
       </div>
       
-      <div class="mx-auto max-w-2xl space-x-2 px-4 py-5 sm:px-6 lg:max-w-7xl lg:px-3 border-y mb-4 border-gray-200">
+      <div class="mx-auto max-w-7xl space-x-2 py-5 sm:px-6 lg:px-3 border-y mb-4 border-gray-200">
         <dl>
-          <router-link :to="`/${$route.params.drg}/version/${year.Year}/gruppe/${gruppe.GrVon}`"
+          <router-link :to="`/${$route.params.drg}/version/${year}/gruppe/${gruppe.GrVon}`"
               :class="(index % 2) ? 'bg-white' : 'bg-gray-50'"
-              class="px-4 py-5 sm:grid sm:grid-cols-10 sm:gap-4 sm:px-6 hover:bg-gray-200"
+              class="py-5 grid grid-cols-10 gap-4 px-6 hover:bg-gray-200"
               v-for="(gruppe, index) in gruppen" :key="gruppe.GrVon">
-            <dt class="text-sm font-medium text-gray-500">{{ gruppe.GrVon }} - {{ gruppe.GrBis }}</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:col-span-8 sm:mt-0">{{ gruppe.GrTi }}</dd>
-            <dd class="text-gray-500 col-span-1">
+            <dt class="text-sm my-auto font-medium text-gray-500">{{ gruppe.GrVon }} - {{ gruppe.GrBis }}</dt>
+            <dd class="text-sm my-auto text-gray-900 col-span-8">{{ gruppe.GrTi }}</dd>
+            <dd class="my-auto text-gray-500 col-span-1">
               <svg class="float-right w-5 h-5 fill-current" width="200px" height="200px" viewBox="-19.04 0 75.804 75.804" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0"><g transform="translate(-831.568 -384.448)"> <path d="M833.068,460.252a1.5,1.5,0,0,1-1.061-2.561l33.557-33.56a2.53,2.53,0,0,0,0-3.564l-33.557-33.558a1.5,1.5,0,0,1,2.122-2.121l33.556,33.558a5.53,5.53,0,0,1,0,7.807l-33.557,33.56A1.5,1.5,0,0,1,833.068,460.252Z" fill="#000000"></path> </g></svg>
             </dd>
           </router-link>
         </dl>
       </div>
     </div>
-    <LoadingAnimation v-if="loading!=0"></LoadingAnimation>
+    <LoadingAnimation v-if="loading!=0 && !error"></LoadingAnimation>
+    <ErrorMessage v-if="error"></ErrorMessage>
   </div>
 </template>
 
@@ -55,14 +56,16 @@
 import axios from 'axios'
 
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
+import ErrorMessage from '@/components/ErrorMessage.vue';
 
 export default {
   data() {
     return {
-      year: {},
+      year: null,
       kapitel: {},
       gruppen: [],
-      loading: 3
+      loading: 1,
+      error: false
     };
   },
   async created() {
@@ -70,22 +73,26 @@ export default {
       var drg = this.$route.params.drg;
       var year_param = this.$route.params.year;
       var kapitel_param = this.$route.params.kapitel;
-      await axios.get(`/api/${drg}/version/${year_param}`).then(res => {
-        this.year = res.data
-        this.loading--
-      });
-      await axios.get(`/api/${drg}/kapitel/?year=${year_param}&kapitel=${kapitel_param}`).then(res => {
-        this.kapitel = res.data[0]
-        this.loading--
-      });
       await axios.get(`/api/${drg}/gruppe/?year=${year_param}&kapitel=${kapitel_param}`).then(res => {
-        this.gruppen = res.data
+        if (!res.data.year || !Number.isInteger(res.data.year)) {
+          throw Error("Year is undefined or not of right type");
+        }
+        this.year = res.data.year;
+        if (res.data.kapitel === undefined || res.data.kapitel.length != 1) {
+          throw Error("Kapitel is undefined or not of right type");
+        }
+        this.kapitel = res.data.kapitel[0];
+        if (res.data.gruppen === undefined || res.data.gruppen.length == 0) {
+          throw Error("Gruppen is undefined or not of right type");
+        }
+        this.gruppen = res.data.gruppen;
         this.loading--
       })
     } catch (e) {
+      this.error = true;
       console.log(e);
     }
   },
-  components: { LoadingAnimation }
+  components: { LoadingAnimation, ErrorMessage }
 }
 </script>
