@@ -1,15 +1,18 @@
 <template>
   <div>
-    <LoadingAnimation v-if="!svg.loaded"></LoadingAnimation>
-    <div v-if="svg.loaded" id="timeline-container">
+    <LoadingAnimation v-if="!svg.loaded && !error"></LoadingAnimation>
+    <div v-if="svg.loaded && !error" id="timeline-container">
+    <ErrorMessage v-if="error"></ErrorMessage>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import router from '@/router.js'
 
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
+import ErrorMessage from './ErrorMessage.vue'
 
 export default {
   name: 'TrackingSVG',
@@ -30,9 +33,11 @@ export default {
   },
   data() {
     return {
+      router: router,
       svg: {
-        'loaded': true
-      }
+        'loaded': false
+      },
+      error: false
     }
   },
   async mounted() {
@@ -56,6 +61,7 @@ export default {
           this.svg.loaded = true
         })
       } catch(e) {
+        this.error = true
         console.log(e)
       }
       this.createTimeline()
@@ -88,7 +94,14 @@ export default {
       var nodes_adj = [];
       data.nodes.forEach((node) => {
         if (start_year <= node.y && node.y <= stop_year) {
-          nodes_adj.push({'x': node.x, 'y': node.y - start_year, 'text': node.text})
+          nodes_adj.push({
+            'x': node.x,
+            'y': node.y - start_year,
+            'text': node.text,
+            'drg': node.drg,
+            'year': node.year,
+            'title': node.title
+          });
         }
       });
 
@@ -114,7 +127,7 @@ export default {
         .attr("y", function(d) { return getCoords({'y': d.y, 'x': data.code_count-1}, "y"); }).attr("dy", 50)
         .attr("font-weight", 500).attr("font-size", 20)
         .style("text-anchor", "middle")
-        .text(function(d) { return d.text; });
+        .text(d => d.text);
 
       var diagonal = d3.svg.diagonal()
         .source(function(d) { return getCoords(d.source, "source"); })
@@ -126,26 +139,31 @@ export default {
         .enter().append("path")
         .attr("class", "link")
         .attr("d", diagonal);
-   
+
+      const vueInstance = this;
       var circle = svg.selectAll(".circle")
         .data(nodes_adj)
         .enter()
         .append("g")
-        .attr("class", "circle");
+        .attr("class", "circle hover:cursor-pointer fill-indigo-600 hover:opacity-50")
+        .on("click", function(d) {vueInstance.navigateTo(d)});
    
       var el = circle.append("circle")
         .attr("cx", function(d) { return getCoords(d, "x"); })
         .attr("cy", function(d) { return getCoords(d, "y"); })
-        .attr("r", 10)
-        .style("fill", "blue");
+        .attr("r", 10);
 
       var text = circle.append("text")
         .attr("x", function(d) { return getCoords(d, "x"); })
         .attr("y", function(d) { return getCoords(d, "y"); })
         .attr("dx", 0).attr("dy", -15)
         .attr("font-weight", 300)
+        .attr("class", "fill-black")
         .style("text-anchor", "middle")
-        .text(function(d) { return d.text; });
+        .text(d => d.text);
+      
+      var title = circle.append("title")
+        .text(d => `${d.year}:  ${d.text}\n${d.title}`);
     },
     getCoords(d, ret="") {
       if (ret == "source") { // x,y für Links
@@ -161,8 +179,11 @@ export default {
       } else if (ret == "y") { // y für Nodes/Text
         return d.x*100+30;
       }
+    },
+    navigateTo(d) {
+      router.push(`/${d.drg}/version/${d.year}/code/${d.text}`)
     }
   },
-  components: { LoadingAnimation }
+  components: { LoadingAnimation, ErrorMessage }
 }
 </script>

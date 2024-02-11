@@ -222,7 +222,14 @@ def get_track(year_start, year_stop, code_param, year_param):
     # create nodes and links
     nodes = []
     for node in tmp_nodes:
-        nodes.append({'x': x[node.Code], 'y': y[node.Year.Year], 'text': node.Code})
+        nodes.append({
+            'x': x[node.Code],
+            'y': y[node.Year.Year],
+            'text': node.Code,
+            'drg': 'ops',
+            'year': node.Year.Year,
+            'title': node.Titel
+        })
     links = []
     for link in tmp_links:
         links.append({
@@ -268,6 +275,8 @@ def traverseUmsteiger(code, step, tmp_nodes, tmp_links, year_start, year_stop, c
         linked_kode = c.Old if step == -1 else c.New
         # check for problems
         if linked_kode in tmp_nodes:  # code already in linked
+            continue
+        if not linked_kode:
             continue
         tmp_nodes.append(linked_kode)
         tmp_links.append([code, linked_kode])
