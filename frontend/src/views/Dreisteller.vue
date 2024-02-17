@@ -1,51 +1,7 @@
 <template>
   <div class="bg-white">
     <div v-if="loading==0 && !error" class="pt-6">
-      <nav aria-label="Breadcrumb">
-        <ol role="list" class="mx-auto flex max-w-7xl items-center space-x-2 px-4 sm:px-6 lg:px-8">
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/ops`" class="mr-2 text-sm font-medium text-gray-900">OPS</router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/ops/version/${year}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ year }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/ops/version/${year}/kapitel/${kapitel.KapNr}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ kapitel.KapNr }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/ops/version/${year}/gruppe/${gruppe.GrVon}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ gruppe.GrVon }}-{{ gruppe.GrBis }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li class="text-sm">
-            <p class="font-medium text-gray-500">{{ dreisteller.DCode }} - {{ dreisteller.DTi }}</p>
-          </li>
-        </ol>
-      </nav>
+      <NavbarBreadcrumb drg="ops" :year="year" :kapnr="kapitel.KapNr" :grvon="gruppe.GrVon" :dcode="dreisteller.DCode"></NavbarBreadcrumb>
 
       <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8">
         <h3 class="text-xl font-medium leading-6 text-gray-900">{{ dreisteller.DCode }} - {{ dreisteller.DTi }}</h3>
@@ -77,6 +33,7 @@ import router from '@/router';
 
 import LoadingAnimation from '@/components/LoadingAnimation.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
+import NavbarBreadcrumb from '@/components/NavbarBreadcrumb.vue';
 
 export default {
   data() {
@@ -124,6 +81,6 @@ export default {
       console.log(e);
     }
   },
-  components: { LoadingAnimation, ErrorMessage }
+  components: { LoadingAnimation, ErrorMessage, NavbarBreadcrumb }
 }
 </script>

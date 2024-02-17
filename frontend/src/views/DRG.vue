@@ -1,16 +1,7 @@
 <template>
   <div class="bg-white">
     <div v-if="loading==0 && !error" class="pt-6">
-      <nav aria-label="Breadcrumb">
-        <ol role="list" class="mx-auto flex max-w-7xl items-center space-x-2 px-4 sm:px-6 lg:px-8">
-          <li class="text-sm">
-            <p class="font-medium text-gray-500">
-              <span v-if="$route.params.drg=='icd'">ICD-10</span>
-              <span v-if="$route.params.drg=='ops'">OPS</span>
-            </p>
-          </li>
-        </ol>
-      </nav>
+      <NavbarBreadcrumb :drg="$route.params.drg"></NavbarBreadcrumb>
 
       <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8">
         <h3 class="text-xl font-medium leading-6 text-gray-900">Versionen</h3>
@@ -41,6 +32,7 @@ import axios from 'axios'
 import router from '@/router'
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
 import ErrorMessage from '@/components/ErrorMessage.vue'
+import NavbarBreadcrumb from '@/components/NavbarBreadcrumb.vue'
 
 export default {
   data() {
@@ -61,6 +53,6 @@ export default {
       console.log(err)
     });
   },
-  components: { LoadingAnimation, ErrorMessage }
+  components: { LoadingAnimation, ErrorMessage, NavbarBreadcrumb }
 }
 </script>
