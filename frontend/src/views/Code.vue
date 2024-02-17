@@ -4,13 +4,13 @@
 
       <NavbarBreadcrumb :drg="$route.params.drg" :year="year" :kapnr="kapitel.KapNr" :grvon="gruppe.GrVon" :dcode="dkode.DCode" :code="kode_gruppe.Code"></NavbarBreadcrumb>
 
-      <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8 flex space-x-4 grid grid-cols-10">
-        <div class="col-span-9">
+      <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8 flex">
+        <div class="flex-1">
           <h3 class="text-xl font-medium leading-6 text-gray-900 py-1.5 my-px">
             {{ ($route.params.drg=='icd') ? kode_gruppe.NormCode : kode_gruppe.Code }} - {{ kode_gruppe.Titel }}
           </h3>
         </div>
-        <div class="col-span-1">
+        <div class="my-auto">
           <router-link :to="($route.params.drg=='icd')?`/icd/version/${year}/track/${kode_gruppe.CodeOhnePunkt}`:`/ops/version/${year}/track/${kode_gruppe.Code}`"
             class="float-right inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             Track
