@@ -1,64 +1,8 @@
 <template>
   <div class="bg-white">
     <div v-if="loading==0 && !error" class="pt-6">
-      <nav aria-label="Breadcrumb">
-        <ol role="list" class="mx-auto flex max-w-7xl items-center space-x-2 px-4 sm:px-6 lg:px-8">
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/${$route.params.drg}`" class="mr-2 text-sm font-medium text-gray-900">
-                <span v-if="$route.params.drg=='icd'">ICD-10</span>
-                <span v-if="$route.params.drg=='ops'">OPS</span>
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/${$route.params.drg}/version/${year}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ year }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/${$route.params.drg}/version/${year}/kapitel/${kapitel.KapNr}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ kapitel.KapNr }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center">
-              <router-link :to="`/${$route.params.drg}/version/${year}/gruppe/${gruppe.GrVon}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ gruppe.GrVon }} - {{ gruppe.GrBis }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li v-if="$route.params.drg == 'ops'">
-            <div class="flex items-center">
-              <router-link :to="`/${$route.params.drg}/version/${year}/dreisteller/${dkode.DCode}`" class="mr-2 text-sm font-medium text-gray-900">
-                {{ dkode.DCode }}
-              </router-link>
-              <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-4 text-gray-300">
-                <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
-              </svg>
-            </div>
-          </li>
-          <li class="text-sm">
-            <p class="font-medium text-gray-500">{{ kode_gruppe.Code }} - {{ kode_gruppe.Titel }}</p>
-          </li>
-        </ol>
-      </nav>
+
+      <NavbarBreadcrumb :drg="$route.params.drg" :year="year" :kapnr="kapitel.KapNr" :grvon="gruppe.GrVon" :dcode="dkode.DCode" :code="kode_gruppe.Code"></NavbarBreadcrumb>
 
       <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8 flex space-x-4 grid grid-cols-10">
         <div class="col-span-9">
@@ -106,6 +50,7 @@ import router from '@/router'
 
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
 import ErrorMessage from '@/components/ErrorMessage.vue';
+import NavbarBreadcrumb from '@/components/NavbarBreadcrumb.vue';
 
 export default {
   data() {
@@ -159,6 +104,6 @@ export default {
       console.log(e);
     }
   },
-  components: { LoadingAnimation, ErrorMessage }
+  components: { LoadingAnimation, ErrorMessage, NavbarBreadcrumb }
 }
 </script>
