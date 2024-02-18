@@ -24,7 +24,7 @@
               :class="(index % 2) ? 'bg-white' : 'bg-gray-50'"
               class="hover:bg-gray-200 hover:cursor-pointer"
               v-for="(kode, index) in kodes" :key="kode.id">
-            <td :class="(kode.Ebene > ebene_lowest) ? 'text-gray-400 pl-2':'text-gray-500'" class="py-4 px-6 text-sm my-auto font-medium">{{ kode.Code }}</td>
+            <td :class="(kode.Ebene > ebene_lowest) ? 'text-gray-400 pl-2':'text-gray-500'" class="py-4 px-6 text-sm my-auto font-medium whitespace-nowrap">{{ kode.Code }}</td>
             <td :class="(kode.Ebene > ebene_lowest) ? 'text-gray-500 pl-2':'text-gray-900'" class="py-4 w-full text-sm my-auto">{{ kode.Titel }}</td>
             <td class="py-4 px-6 my-auto text-gray-500">
               <div class="float-right flex text-sm">

@@ -13,7 +13,7 @@
               :class="(index % 2) ? 'bg-white' : 'bg-gray-50'"
               class="hover:bg-gray-200 hover:cursor-pointer"
               v-for="(kode, index) in kodes" :key="kode.id">
-            <td class="py-4 px-6 text-sm my-auto font-medium text-gray-500">{{ kode.Code }}</td>
+            <td class="py-4 px-6 text-sm my-auto font-medium text-gray-500 whitespace-nowrap">{{ kode.Code }}</td>
             <td class="py-4 w-full text-sm my-auto text-gray-900">{{ kode.Titel }}</td>
             <td class="py-4 px-6 my-auto text-gray-500">
               <svg class="float-right w-5 h-5 fill-current" width="200px" height="200px" viewBox="-19.04 0 75.804 75.804" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0"><g transform="translate(-831.568 -384.448)"> <path d="M833.068,460.252a1.5,1.5,0,0,1-1.061-2.561l33.557-33.56a2.53,2.53,0,0,0,0-3.564l-33.557-33.558a1.5,1.5,0,0,1,2.122-2.121l33.556,33.558a5.53,5.53,0,0,1,0,7.807l-33.557,33.56A1.5,1.5,0,0,1,833.068,460.252Z" fill="#000000"></path> </g></svg>
