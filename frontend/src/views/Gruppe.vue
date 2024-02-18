@@ -13,7 +13,7 @@
               :class="(index % 2) ? 'bg-white' : 'bg-gray-50'"
               class="hover:bg-gray-200 hover:cursor-pointer"
               v-for="(kode, index) in kodes" :key="kode.id">
-            <td class="py-4 px-6 text-sm my-auto font-medium text-gray-500">
+            <td class="py-4 px-6 text-sm my-auto font-medium text-gray-500 whitespace-nowrap">
               <span v-if="$route.params.drg=='icd'">{{ kode.Code }}</span>
               <span v-if="$route.params.drg=='ops'">{{ kode.DCode }}</span>
             </td>
