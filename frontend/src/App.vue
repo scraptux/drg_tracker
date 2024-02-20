@@ -24,7 +24,7 @@
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
               <router-link :to="`/icd`" :class="($route.path.slice(0,4) === '/icd')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">ICD-Code</router-link>
               <router-link :to="`/ops`" :class="($route.path.slice(0,4) === '/ops')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">OPS-Code</router-link>
-              <!--router-link :to="`/track`" :class="($route.path.slice(0,6) === '/track')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">Code-Tracking</router-link-->
+              <router-link :to="`/track`" :class="($route.path.slice(0,6) === '/track')?'bg-gray-900 text-white':'text-gray-300 hover:bg-gray-700 hover:text-white'" class="px-3 py-2 rounded-md text-sm font-medium">Code-Tracking</router-link>
             </div>
           </div>
         </div>

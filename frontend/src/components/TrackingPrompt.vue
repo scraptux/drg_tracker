@@ -68,26 +68,26 @@ export default {
       if (this.promptInput === '') {
         this.promptError = "Bitte einen gültigen Namen wählen."
         return
-      } else if (Object.prototype.hasOwnProperty.call(store.tracking_vars, this.promptInput)) {
+      } else if (store.tracker.containsVar(this.promptInput)) {
         this.promptError = "Dieser Name ist bereits vergeben."
         return
       }
-      store.addVariable(this.promptInput)
+      store.tracker.addVar(this.promptInput)
       this.closePrompt()
     },
     changeVarName() {
       if (this.promptInput === '') {
         this.promptError = "Bitte einen gültigen Namen wählen."
         return
-      } else if (Object.prototype.hasOwnProperty.call(store.tracking_vars, this.promptInput)) {
+      } else if (store.tracker.containsVar(this.promptInput)) {
         this.promptError = "Dieser Name ist bereits vergeben."
         return
       }
-      store.changeVariableName(this.promptInput)
+      store.tracker.changeVarName(this.promptInput)
       this.closePrompt()
     },
     deleteVar() {
-      store.deleteVariable(store.displayed_var)
+      store.tracker.delVar(store.tracker.displayedVar)
       this.closePrompt()
     },
     closePrompt() {

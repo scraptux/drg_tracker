@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white">
     <div v-if="loading==0 && !error" class="pt-6">
-      <NavbarBreadcrumb :drg="$route.params.drg"></NavbarBreadcrumb>
+      <NavbarBreadcrumb class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" :drg="$route.params.drg"></NavbarBreadcrumb>
 
       <div class="mx-auto max-w-7xl space-x-2 px-4 py-5 sm:px-6 lg:px-8">
         <h3 class="text-xl font-medium leading-6 text-gray-900">Versionen</h3>
