@@ -177,10 +177,12 @@ def track(request):
     year_stop = request.query_params.get('year_stop')
     year_param = request.query_params.get('year')
     code_param = request.query_params.get('code')
-    if not year_start or not year_stop or not year_param or not code_param:
+    if not year_start or not year_stop or not code_param:
         return HttpResponseBadRequest("missing parameters")
     year_start = int(year_start)
     year_stop = int(year_stop)
+    if not year_param:
+        year_param = year_stop
     return get_track(year_start, year_stop, code_param, year_param)
 
 def get_track(year_start, year_stop, code_param, year_param):

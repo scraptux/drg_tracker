@@ -1,7 +1,7 @@
 <template>
   <div>
-    <LoadingAnimation v-if="!svg.loaded && !error"></LoadingAnimation>
-    <div v-if="svg.loaded && !error" id="timeline-container">
+    <LoadingAnimation v-if="loading && !error"></LoadingAnimation>
+    <div v-if="!error" id="timeline-container">
     <ErrorMessage v-if="error"></ErrorMessage>
     </div>
   </div>
@@ -21,33 +21,43 @@ export default {
     years: {
       handler: function(newYears, oldYears) {
         if (newYears[0] == oldYears[0] && newYears[1] == oldYears[1]) {
-          return
+          return;
         }
-        if (this.svg.loaded) {
-          this.svg.loaded = false
-          this.loadSVGData(newYears[0], newYears[1])
+        if (!this.loading) {
+          this.loading = true;
+          this.loadSVGData(newYears[0], newYears[1]);
         }
       },
       deep: true
+    },
+    loading: {
+      handler: function(newLoad, oldLoad) {
+        if (newLoad == oldLoad) {
+          return;
+        }
+        if (!newLoad) {
+          this.createTimeline();
+        }
+      }
     }
   },
   data() {
     return {
       router: router,
-      svg: {
-        'loaded': false
-      },
+      svg: {},
+      loading: true,
       error: false
     }
   },
   async mounted() {
     if (this.data) {
-      this.svg = this.data
-      this.svg.loaded = true
-      this.createTimeline()
+      this.svg.years = this.data.years;
+      this.svg.nodes = this.data.nodes;
+      this.svg.links = this.data.links;
+      this.svg.code_count = this.data.code_count;
+      this.loading = false;
     } else if (this.drg && this.code && this.year && this.years) {
-      this.svg.loaded = false
-      this.loadSVGData(this.years[0], this.years[1])
+      this.loadSVGData(this.years[0], this.years[1]);
     }
   },
   methods: {
@@ -58,13 +68,12 @@ export default {
           this.svg.nodes = res.data.nodes
           this.svg.links = res.data.links
           this.svg.code_count = res.data.code_count
-          this.svg.loaded = true
+          this.loading = false
         })
       } catch(e) {
         this.error = true
         console.log(e)
       }
-      this.createTimeline()
     },
     createTimeline() { // start_year and stop_year take indices
       var getCoords = this.getCoords

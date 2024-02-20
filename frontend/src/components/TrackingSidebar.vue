@@ -16,7 +16,7 @@
     <div class="relative w-1/6 ml-2 mt-2" v-if="store.available_years.length!=0">
       <button type="button" @click="searchDropdown=!searchDropdown" class="relative w-full h-full border-x border-gray-300 rounded-md bg-gray-50 py-2 pl-3 pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm">
         <span class="flex items-center">
-          <span class="ml-1 block truncate">{{ store.search_year }}</span>
+          <span class="ml-1 block truncate">{{ store.tracker.ysearch }}</span>
         </span>
         <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
           <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -27,13 +27,13 @@
       <!-- Dropdown -->
       <ul v-if="searchDropdown"
         class="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-        <li v-for="year in store.available_years.slice().reverse()" :key="year.Year" :class="(year.Year == store.search_year) ? 'text-indigo-600' : ''"
+        <li v-for="year in store.available_years.slice().reverse()" :key="year" :class="(year == store.tracker.ysearch) ? 'text-indigo-600' : ''"
           class="text-gray-900 relative select-none pl-3 pr-9 hover:text-white hover:bg-indigo-600 cursor-pointer"
-          @click="store.setSearchYear(year.Year)">
-          <div class="flex items-center py-2" v-if="store.tracking_years[0] <= year.Year && year.Year <= store.tracking_years[1]">
-            <span :class="(year.Year == store.search_year) ? 'font-semibold' : 'font-normal'" class="ml-2 block truncate">{{ year.Year }}</span>
+          @click="setSearchYear(year)">
+          <div class="flex items-center py-2" v-if="store.tracker.ystart <= year && year <= store.tracker.ystop">
+            <span :class="(year == store.tracker.ysearch) ? 'font-semibold' : 'font-normal'" class="ml-2 block truncate">{{ year }}</span>
           </div>
-          <span v-if="year.Year == store.search_year" class="absolute inset-y-0 right-0 flex items-center pr-4">
+          <span v-if="year == store.tracker.ysearch" class="absolute inset-y-0 right-0 flex items-center pr-4">
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
             </svg>
@@ -76,15 +76,15 @@
     <div v-if="tab_value == 0" class="bg-white">
       <button @click="add('icd', icd.CodeOhnePunkt)"
         :class="[(index % 2) ? 'bg-white' : 'bg-gray-50',
-                 (icd.CodeOhnePunkt in store.tracking_vars[store.displayed_var]) ? 'opacity-50' : 'hover:bg-gray-200']"
-        :disabled="icd.CodeOhnePunkt in store.tracking_vars[store.displayed_var]"
+                 (store.tracker.getDisplayedVar().containsCode(icd.CodeOhnePunkt)) ? 'opacity-50' : 'hover:bg-gray-200']"
+        :disabled="store.tracker.getDisplayedVar().containsCode(icd.CodeOhnePunkt)"
         class="px-4 py-5 grid grid-cols-12 gap-4 w-full"
         v-for="(icd, index) in results_icd" :key="icd">
-        <dt class="text-sm font-medium col-span-2 text-left text-gray-500" :class="(icd.CodeOhnePunkt in store.tracking_vars[store.displayed_var]) ? 'text-green-500' : ''">{{ icd.Code }}</dt>
-        <dd class="text-sm col-span-9 mt-0 text-left text-gray-900" :class="(icd.CodeOhnePunkt in store.tracking_vars[store.displayed_var]) ? 'text-green-600' : ''">{{ icd.Titel }}</dd>
-        <dd class="text-gray-500 col-span-1" :class="(icd.CodeOhnePunkt in store.tracking_vars[store.displayed_var]) ? 'text-green-400' : ''">
+        <dt class="text-sm font-medium col-span-2 text-left text-gray-500" :class="store.tracker.getDisplayedVar().containsCode(icd.CodeOhnePunkt) ? 'text-green-500' : ''">{{ icd.Code }}</dt>
+        <dd class="text-sm col-span-9 mt-0 text-left text-gray-900" :class="store.tracker.getDisplayedVar().containsCode(icd.CodeOhnePunkt) ? 'text-green-600' : ''">{{ icd.Titel }}</dd>
+        <dd class="text-gray-500 col-span-1" :class="store.tracker.getDisplayedVar().containsCode(icd.CodeOhnePunkt) ? 'text-green-400' : ''">
           <div class="float-right text-medium">
-            <i :class="(icd.CodeOhnePunkt in store.tracking_vars[store.displayed_var]) ? 'fa-check': 'fa-plus'" class="fa-solid"></i>
+            <i :class="store.tracker.getDisplayedVar().containsCode(icd.CodeOhnePunkt) ? 'fa-check': 'fa-plus'" class="fa-solid"></i>
           </div>
         </dd>
       </button>
@@ -92,15 +92,15 @@
     <div v-if="tab_value == 1">
       <button @click="add('ops', ops.Code)"
         :class="[(index % 2) ? 'bg-white' : 'bg-gray-50',
-                 (ops.Code in store.tracking_vars[store.displayed_var]) ? 'opacity-50' : 'hover:bg-gray-200']"
-        :disabled="ops.Code in store.tracking_vars[store.displayed_var]"
+                 store.tracker.getDisplayedVar().containsCode(ops.Code) ? 'opacity-50' : 'hover:bg-gray-200']"
+        :disabled="store.tracker.getDisplayedVar().containsCode(ops.Code)"
         class="px-4 py-5 grid grid-cols-12 gap-4 w-full"
         v-for="(ops, index) in results_ops" :key="ops">
-        <dt class="text-sm font-medium col-span-2 text-left text-gray-500" :class="(ops.Code in store.tracking_vars[store.displayed_var]) ? 'text-green-500' : ''">{{ ops.Code }}</dt>
-        <dd class="text-sm col-span-9 mt-0 text-left text-gray-900" :class="(ops.Code in store.tracking_vars[store.displayed_var]) ? 'text-green-600' : ''">{{ ops.Titel }}</dd>
-        <dd class="text-gray-400 col-span-1" :class="(ops.Code in store.tracking_vars[store.displayed_var]) ? 'text-green-400' : ''">
+        <dt class="text-sm font-medium col-span-2 text-left text-gray-500" :class="store.tracker.getDisplayedVar().containsCode(ops.Code) ? 'text-green-500' : ''">{{ ops.Code }}</dt>
+        <dd class="text-sm col-span-9 mt-0 text-left text-gray-900" :class="store.tracker.getDisplayedVar().containsCode(ops.Code) ? 'text-green-600' : ''">{{ ops.Titel }}</dd>
+        <dd class="text-gray-400 col-span-1" :class="store.tracker.getDisplayedVar().containsCode(ops.Code) ? 'text-green-400' : ''">
           <div class="float-right text-medium">
-            <i :class="(ops.Code in store.tracking_vars[store.displayed_var]) ? 'fa-check': 'fa-plus'" class="fa-solid"></i>
+            <i :class="store.tracker.getDisplayedVar().containsCode(ops.Code) ? 'fa-check': 'fa-plus'" class="fa-solid"></i>
           </div>
         </dd>
       </button>
@@ -149,29 +149,36 @@ export default {
         this.loading = 2;
         this.results_icd = [];
         this.results_ops = [];
-        await axios.get(`/api/icd/search/?s=${this.searchText}&year=${store.search_year}`).then(res => {
+
+        // TODO: fix
+        await axios.get(`/api/icd/search/?s=${this.searchText}&year=${store.tracker.ysearch}`).then(res => {
           this.results_icd = res.data;
           this.loading -= 1;
           if (this.results_icd.length > 0) {
             this.tab_value = 0;
           }
         });
-        await axios.get(`/api/ops/search/?s=${this.searchText}&year=${store.search_year}`).then(res => {
+        await axios.get(`/api/ops/search/?s=${this.searchText}&year=${store.tracker.ysearch}`).then(res => {
           this.results_ops = res.data;
           this.loading -= 1;
           if (this.results_ops.length > 0 && this.tab_value == -1) {
             this.tab_value = 1;
           } 
-        })
+        });
       } catch (e) {
         console.log(e);
       }
+    },
+    setSearchYear(year) {
+      store.tracker.ysearch = year;
+      this.searchDropdown = 0;
+      this.search();
     },
     tab(i) {
       this.tab_value = i;
     },
     add(drg, code) {
-      store.addCode(drg, code)
+      store.tracker.addCode(drg, code);
     }
   },
   components: { LoadingAnimation }
