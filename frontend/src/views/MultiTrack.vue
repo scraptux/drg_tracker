@@ -83,7 +83,7 @@
       <!-- Tracked-Items -->
       <div v-if="store.tracker && !store.tracker.loading" class="flex flex-1 overflow-y-scroll pb-5">
         <div v-if="codesInDisplayedVar" class="mx-5 my-2 w-full rounded-lg">
-          <button @click="store.show_info=code.code"
+          <button @click="code.data ? store.show_info=code.code : null"
               :class="[(!code.data && index % 2) ? 'bg-white' : 'bg-gray-50',
                        (index == 0) ? 'rounded-t-lg border-t' : '',
                        (index == codesInDisplayedVar-1) ? 'mb-28 rounded-b-lg border-b' : '',
@@ -91,21 +91,25 @@
                        (code.data && code.data.code_data.status_code == 1) ? 'bg-yellow-200 from-yellow-200' : '',
                        (code.data && code.data.code_data.status_code == 2) ? 'bg-orange-300 from-orange-300' : '',
                        (code.data && code.data.code_data.status_code == 3) ? 'bg-red-300 from-red-300' : '',
-                       (code.data && (code.data.edit_status == 1 || code.data.edit_status == 3)) ? 'bg-gradient-to-r to-green-300' : '']"
-              class="px-4 py-5 grid grid-cols-12 gap-4 w-full border-x border-b border-gray-300 hover:brightness-95"
+                       (code.data && (code.data.edit_status == 1 || code.data.edit_status == 3)) ? 'bg-gradient-to-r to-green-300' : '',
+                       (!code.loading && !code.error) ? 'hover:brightness-95' : 'hover:cursor-default',
+                       (code.error) ? 'bg-gray-300' : '']"
+              class="px-4 py-5 grid grid-cols-12 gap-4 w-full border-x border-b border-gray-300"
               v-for="(code, index) in store.tracker.getDisplayedVar().codes" :key="code">
             <dt class="text-sm font-medium col-span-1 text-left text-gray-500">
               {{ !code.data ? code.code : code.data.code_data.code.Code }}
             </dt>
             <dd class="text-sm col-span-10 mt-0 text-left text-gray-900">
-              <LoadingAnimation :nomargin="true" :height=24 v-if="!code.data"></LoadingAnimation>
+              <LoadingAnimation :nomargin="true" :height=24 v-if="code.loading"></LoadingAnimation>
               <span v-if="code.data">{{ code.data.code_data.code.Titel}}</span>
+              <span v-if="code.error" class="text-red-600 font-semibold">{{ code.error }}</span>
             </dd>
             <dd class="text-gray-500 col-span-1 flex flex-row justify-end">
               <button @click="store.tracker.delCode(code.code)" @click.stop.prevent="" class="aspect-square h-6 mr-2 text-red-400 hover:text-red-800">
                 <i class="fa-solid fa-trash"></i>
               </button>
-              <div class="aspect-square h-6 text-blue-400 hover:text-blue-800">
+              <div :class="[(!code.loading && !code.error) ? 'text-blue-400 hover:text-blue-800' : '',
+                            (code.error) ? 'text-gray-300' : '']" class="aspect-square h-6">
                 <i class="fa-solid fa-info"></i>
               </div>
             </dd>
