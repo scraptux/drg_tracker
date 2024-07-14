@@ -166,6 +166,23 @@ class Tracker {
     sort() {
         this.vars = this.vars.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
     }
+
+    toSAS() {
+        let sascode = "";
+        sascode += "/****************************/\n";
+        sascode += "/* Create Tracker Variables */\n";
+        sascode += "/****************************/\n";
+        sascode += "* programmatically created by drg-tracker.de ;\n";
+        sascode += "%macro createTrackerVars(file=);\n";
+        for (let v in this.vars) {
+            let s = this.vars[v].toSAS(this.ystart, this.ystop);
+            sascode += s;
+        }
+        sascode += "%mend;\n";
+        let vars = this.vars.map((v) => v.name.replace(' ',''));
+        sascode += `%let tracker_variables = ${vars.join(' ')};\n`;
+        return sascode;
+    }
 }
 
 class Variable {
@@ -236,6 +253,62 @@ class Variable {
 
     sort() {
         this.codes = this.codes.sort((a, b) => a.code.toLowerCase().localeCompare(b.code.toLowerCase()));
+    }
+
+    toSAS(ystart, ystop) {
+        // get list of all codes included with specified year
+        // objects are {drg, code, year} for each
+        let codes_list = [];
+        for (let c in this.codes) {
+            //sascode += this.codes[c].toSAS(this.ystart, this.ystop);
+            let code = this.codes[c];
+            for (let cx in code.data.edit_data) {
+                if (!code.data.edit_data[cx].selected) {
+                    continue;
+                }
+                if (code.data.edit_data[cx].year < ystart ||
+                    code.data.edit_data[cx].year > ystop) {
+                    continue;
+                }
+                codes_list.push({
+                    drg: code.drg,
+                    code: code.data.edit_data[cx].code,
+                    year: code.data.edit_data[cx].year,
+                });
+            }
+        }
+        // sort by drg and by codes
+        // objects are {drg, code, years}
+        let codes_list_grouped = {};
+        codes_list.forEach(item => {
+            if (!codes_list_grouped[item.code]) {
+                codes_list_grouped[item.code] = {
+                    drg: item.drg,
+                    code: item.code.replace('.','').replace('-',''),
+                    year: [],
+                };
+            }
+            codes_list_grouped[item.code].year.push(item.year);
+        });
+        // convert grouped list to SAS Code
+        let varname = this.name.replace(' ', '');
+        let sascode1 = [];  // all %createvar calls
+        let sascode2 = [];  // conditional to set codes
+        let sascode3 = [];  // vars to drop
+        for (let key in codes_list_grouped) {
+            let item = codes_list_grouped[key];
+            sascode1.push(`%createvar(file=&file., liste=%quote(${item.code}), block=${item.drg}, name=${varname}_${item.code}});`);
+            sascode2.push(`(${varname}_${item.code} eq 1 and (year in (${item.year.join(', ')})))`);
+            sascode3.push(`${varname}_${item.code}`);
+        }
+        let sascode = `* variable ${varname} ;\n`;
+        sascode += `${sascode1.join('\n')}\n`;
+        sascode += 'data &file.;\n';
+        sascode += '  set &file.;\n';
+        sascode += `  ${varname} = ${sascode2.join(' or ')};\n`;
+        sascode += `  drop ${sascode3.join(' ')};\n`;
+        sascode += 'run;\n';
+        return sascode;
     }
 }
 
