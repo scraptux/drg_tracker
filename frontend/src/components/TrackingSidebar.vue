@@ -171,6 +171,7 @@ export default {
     },
     setSearchYear(year) {
       store.tracker.ysearch = year;
+      store.tracker.save();
       this.searchDropdown = 0;
       this.search();
     },

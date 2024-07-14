@@ -47,6 +47,9 @@ export const store = reactive({
     if (format == 'json') {
       data = this.saveToJson()
       blob = new Blob([data], {type: "application/json;charset=utf-8"})
+    } else if (format == 'sas') {
+      data = this.saveToSAS();
+      blob = new Blob([data], {type: "text/plain;charset=utf-8"})
     } else {
       return
     }
@@ -61,6 +64,10 @@ export const store = reactive({
 
   saveToJson() {
     return JSON.stringify(this.tracker);
+  },
+
+  saveToSAS() {
+    return this.tracker.toSAS();
   },
 
   async sendNotification(s) {

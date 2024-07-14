@@ -17,6 +17,7 @@
             <div class="py-1" role="none">
               <a @click="store.saveToFile('json')" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 hover:text-gray-900 hover:cursor-pointer">JSON</a>
               <!--a @click="store.saveToFile('csv')" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 hover:text-gray-900 hover:cursor-pointer">CSV</a-->
+              <a @click="store.saveToFile('sas')" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-300 hover:text-gray-900 hover:cursor-pointer">SAS</a>
             </div>
           </div>
         </div>
