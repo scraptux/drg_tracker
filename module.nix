@@ -95,15 +95,14 @@ in {
         listen = [{ addr = cfg.frontend.host; port = cfg.frontend.port; }];
         root = cfg.frontend.package;
         extraConfig = ''
-          location /api/ {
-            proxy_pass http://${cfg.backend.host}:${toString cfg.backend.port};
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-          }
           location / {
-            try_files $uri $uri/ /index.html;
+            try_files $uri $uri/ @rewrites;
+          }
+          location @rewrites {
+            rewrite ^(.+)$ /index.html last;
+          }
+          location /api {
+            proxy_pass http://${cfg.backend.host}:${toString cfg.backend.port};
           }
         '';
       };

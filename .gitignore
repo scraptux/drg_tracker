@@ -1,9 +1,4 @@
-data
+data/
 
-backend/*.sqlite3
-backend/*/__pycache__
-
-frontend/node_modules
-frontend/dist
-
-.hypothesis/
+__pycache__/
+*.pyc

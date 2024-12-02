@@ -10,6 +10,11 @@
     backend = system: nixpkgs.legacyPackages.${system}.callPackage ./backend/default.nix {};
     frontend = system: nixpkgs.legacyPackages.${system}.callPackage ./frontend/default.nix {};
   in {
+    apps."x86_64-linux".default = {
+      type = "app";
+      program = "${self.packages."x86_64-linux".backend}/bin/drg-tracker";
+    };
+
     nixosModules.drgtracker = (import ./module.nix) { inherit self; };
     nixosModules.default = self.nixosModules.drgtracker;
 
