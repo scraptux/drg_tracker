@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "drg-tracker-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -19,7 +19,8 @@
     "d3": "^7.6.1",
     "nouislider": "^15.6.1",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.13"
+    "vue-router": "^4.0.13",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
