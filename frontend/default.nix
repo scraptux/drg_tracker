@@ -1,36 +1,23 @@
 { pkgs ? import <nixpkgs> {} }:
-let
+
+pkgs.buildNpmPackage {
   pname = "drg-tracker-frontend";
   version = "0.1.0";
   src = ./.;
-in
-pkgs.mkYarnPackage {
-  inherit pname version src;
-  
-  packageJSON = "${src}/package.json";
-  offlineCache = pkgs.fetchYarnDeps {
-    yarnLock = "${src}/yarn.lock";
-    hash = "sha256-sM9z7nHuTV35tmVaIfGRtsmAUT4s10OpBDSswtMWWn0=";
-  };
 
-  configurePhase = ''
-    cp -r $node_modules node_modules
-    chmod +w node_modules
-  '';
+  npmDepsHash = "sha256-wkuhE/7TfFbvvti/S5unzoUzRN5/g3rBSsbdwJSV6YU=";
 
-  buildPhase = ''
-    yarn --offline build
-  '';
+  npmBuildScript = "build";
 
   installPhase = ''
+    runHook preInstall
     cp -r dist/ $out
+    runHook postInstall
   '';
-
-  doDist = false;
 
   meta = with pkgs.lib; {
     description = "Web-Frontend for DRG-Tracker";
-    homepage = "drg-tracker.de";
+    homepage = "https://drg-tracker.de";
     license = licenses.gpl3Plus;
     maintainers = [ maintainers.scraptux ];
   };

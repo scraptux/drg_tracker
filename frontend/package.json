@@ -19,8 +19,7 @@
     "d3": "^7.6.1",
     "nouislider": "^15.6.1",
     "vue": "^3.2.13",
-    "vue-router": "^4.0.13",
-    "yarn": "^1.22.22"
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
