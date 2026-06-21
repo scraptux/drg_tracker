@@ -22,7 +22,7 @@ in {
 
     frontend = {
       enable = mkEnableOption "Enable the drg-tracker frontend.";
-      package = mkPackageOption self.packages.${pkgs.system} "frontend" { };
+      package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "frontend" { };
       host = mkOption {
         type = types.str;
         default = "127.0.0.1";
@@ -37,7 +37,7 @@ in {
 
     backend = {
       enable = mkEnableOption "Enable the drg-tracker backend.";
-      package = mkPackageOption self.packages.${pkgs.system} "backend" { };
+      package = mkPackageOption self.packages.${pkgs.stdenv.hostPlatform.system} "backend" { };
       host = mkOption {
         type = types.str;
         default = "127.0.0.1";
