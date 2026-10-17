@@ -4,7 +4,7 @@ let
   version = "0.1.0";
   src = ./.;
 in
-pkgs.python312Packages.buildPythonApplication rec {
+pkgs.python3Packages.buildPythonApplication rec {
   inherit pname version src;
   pyproject = false;
 
@@ -12,7 +12,7 @@ pkgs.python312Packages.buildPythonApplication rec {
     pkgs.gettext
   ];
 
-  dependencies = with pkgs.python312Packages; [
+  dependencies = with pkgs.python3Packages; [
     django
     django-extensions
     djangorestframework
@@ -22,11 +22,11 @@ pkgs.python312Packages.buildPythonApplication rec {
   ];
 
   postBuild = ''
-    ${pkgs.python312.pythonOnBuildForHost.interpreter} -OO -m compileall .
+    ${pkgs.python3.pythonOnBuildForHost.interpreter} -OO -m compileall .
   '';
 
   installPhase = let
-    pythonPath = pkgs.python312Packages.makePythonPath dependencies;
+    pythonPath = pkgs.python3Packages.makePythonPath dependencies;
   in ''
     runHook preInstall
 
@@ -36,7 +36,7 @@ pkgs.python312Packages.buildPythonApplication rec {
 
     makeWrapper $out/lib/drg-tracker/src/manage.py $out/bin/drg-tracker \
       --prefix PYTHONPATH : "${pythonPath}"
-    makeWrapper ${pkgs.python312Packages.gunicorn}/bin/gunicorn $out/bin/gunicorn \
+    makeWrapper ${pkgs.python3Packages.gunicorn}/bin/gunicorn $out/bin/gunicorn \
       --prefix PYTHONPATH : "${pythonPath}:$out/lib/drg-tracker/src" \
       --set DJANGO_SETTINGS_MODULE "backend.settings"
 
@@ -45,7 +45,7 @@ pkgs.python312Packages.buildPythonApplication rec {
 
   meta = with pkgs.lib; {
     description = "Backend for DRG-Tracker";
-    homepage = "drg-tracker.de";
+    homepage = "https://drg-tracker.de";
     license = licenses.gpl3Plus;
     maintainers = [ maintainers.scraptux ];
   };
